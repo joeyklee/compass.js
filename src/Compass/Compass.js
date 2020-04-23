@@ -24,14 +24,6 @@ class Compass {
    */
   async init() {
     await this.watchPosition();
-    this.attachDeviceOrientationhandler();
-  }
-
-  /**
-   * @function
-   * Attaches the device orientaiton hanlder
-   */
-  attachDeviceOrientationhandler() {
     //   check for device orientation support
     if (window.DeviceOrientationEvent) {
       window.addEventListener(
@@ -128,6 +120,7 @@ class Compass {
       console.log("compass direction not found");
     }
 
+    // console.log(this.deviceAngleDelta)
     this.deviceAngleDelta = Math.round(this.deviceAngleDelta);
   }
 
