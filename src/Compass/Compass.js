@@ -22,8 +22,9 @@ class Compass {
    * initialized the compass - returns a promise or can invoke a callback
    * @param {callback} callback - callback to be called after the .start() function is done
    */
-  init(callback){
-    return this.callCallback(this.start(), callback);
+  init(callback = () => {}){
+    this.callCallback(this.start(), callback);
+    return this;
   }
 
   /**
