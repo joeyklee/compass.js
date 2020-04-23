@@ -1,12 +1,12 @@
 
 
-
+let compass;
 window.addEventListener('DOMContentLoaded', async() =>{
   alert("a compass that always points you to London, UK")
   const $compass = document.querySelector("#compass");
 
-  const compass = new Compass();
-  await compass.init();
+  compass = new Compass();
+  await compass.start();
   
   setInterval( () => {
     const currentPosition = {lat: compass.position.coords.latitude, lng: compass.position.coords.longitude};
