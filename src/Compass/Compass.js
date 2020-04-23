@@ -22,7 +22,7 @@ class Compass {
    * initialized the compass - returns a promise or can invoke a callback
    * @param {callback} callback - callback to be called after the .start() function is done
    */
-  init(callback = () => {}){
+  init(callback = undefined){
     if(callback){
       this.callCallback(this.start(), callback);
     }else {
@@ -71,6 +71,7 @@ class Compass {
             this.deviceOrientationHandler.bind(this),
             true
           );
+          return true;
         } else {
           throw new Error("no device orientation permissions!");
         }

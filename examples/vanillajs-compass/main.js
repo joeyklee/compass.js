@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', async() =>{
   const $compass = document.querySelector("#compass");
 
   compass = new Compass();
-  await compass.start();
+  await compass.init();
   
   setInterval( () => {
     const currentPosition = {lat: compass.position.coords.latitude, lng: compass.position.coords.longitude};
