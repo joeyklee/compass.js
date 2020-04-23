@@ -15,16 +15,24 @@ class Compass {
     this.permissionGranted = false;
 
     this.debug = false;
-    this.ready = this.callCallback(this.init(), callback);
+
+  }
+
+  /**
+   * initialized the compass - returns a promise or can invoke a callback
+   * @param {callback} callback - callback to be called after the .start() function is done
+   */
+  init(callback){
+    return this.callCallback(this.start(), callback);
   }
 
   /**
    * Initializes the device orientation and watches the user position by default
    * @async 
-   * @function init
+   * @function start
    *
    */
-  async init() {
+  async start() {
     try {
       await this.watchPosition();
 

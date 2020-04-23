@@ -10,7 +10,8 @@ let angleToNorth;
 let angleToLondon;
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  compass= new Compass(compassReady);
+  compass= new Compass();
+  compass.init(compassReady);
 
   textAlign(CENTER);
 }
