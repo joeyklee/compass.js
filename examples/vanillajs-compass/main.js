@@ -2,6 +2,7 @@
 
 
 window.addEventListener('DOMContentLoaded', async() =>{
+  alert("a compass that always points you to London, UK")
   const $compass = document.querySelector("#compass");
 
   const compass = new Compass();
@@ -12,5 +13,5 @@ window.addEventListener('DOMContentLoaded', async() =>{
     const angleToLondon = compass.getBearingToDestination(currentPosition, {lat:51.507278, lng:-0.127821});
     $compass.style.transform = `rotate(${Math.round(angleToLondon)}deg)`;
   }, 500);
-  
+
 })
