@@ -26,9 +26,9 @@ class Compass {
     try{
       await this.watchPosition();
 
-      if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
-        const permission = await window.DeviceOrientationEvent.requestPermission();
-        if(permission === 'granted'){
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        const permission = await DeviceOrientationEvent.requestPermission();
+        if(permission == 'granted'){
           window.addEventListener(
             "deviceorientation",
             this.deviceOrientationHandler.bind(this),
@@ -54,6 +54,10 @@ class Compass {
       alert(err);
     }
     
+  }
+  
+  allowOrientationPosition(){
+
   }
 
   /**
