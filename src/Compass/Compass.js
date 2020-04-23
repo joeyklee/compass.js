@@ -23,48 +23,37 @@ class Compass {
    * @function
    */
   async init() {
-    await this.watchPosition();
-    //   check for device orientation support
-    // if (window.DeviceOrientationEvent) {
-    //   window.addEventListener(
-    //     "deviceorientation",
-    //     this.deviceOrientationHandler.bind(this),
-    //     true
-    //   );
-    // } else {
-    //   alert("no device orientation support");
-    // }
-    await this.attachDeviceOrientationHandler();
-  }
+    try{
+      await this.watchPosition();
 
-  attachDeviceOrientationHandler() {
-    // feature detect
-    if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
-      return new Promise((resolve, reject) => {
-        window.DeviceOrientationEvent.requestPermission()
-          .then((permissionState) => {
-            if (permissionState === "granted") {
-              window.addEventListener(
-                "deviceorientation",
-                this.deviceOrientationHandler.bind(this),
-                true
-              );
-            }
-          })
-          .catch(console.error);
-      });
-    } else {
-      // handle regular non iOS 13+ devices
-      if (window.DeviceOrientationEvent) {
-        window.addEventListener(
-          "deviceorientation",
-          this.deviceOrientationHandler.bind(this),
-          true
-        );
+      if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
+        const permission = await window.DeviceOrientationEvent.requestPermission();
+        if(permission === 'granted'){
+          window.addEventListener(
+            "deviceorientation",
+            this.deviceOrientationHandler.bind(this),
+            true
+          );
+        } else {
+          throw new Error("no device orientation permissions!")
+        }
       } else {
-        alert("no device orientation support");
+        if (window.DeviceOrientationEvent) {
+          window.addEventListener(
+            "deviceorientation",
+            this.deviceOrientationHandler.bind(this),
+            true
+          );
+        } else {
+          alert("no device orientation support");
+        }
       }
+
+      // await this.attachDeviceOrientationHandler();
+    }catch(err){
+      alert(err);
     }
+    
   }
 
   /**
