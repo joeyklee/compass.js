@@ -24,7 +24,6 @@ class Compass {
    */
   init(callback = () => {}){
     this.callCallback(this.start(), callback);
-    return this;
   }
 
   /**
@@ -44,6 +43,7 @@ class Compass {
         this.permissionGranted = false;
         alert("compass permissions not granted - compass will not work");
       }
+      return this;
     } catch (err) {
       alert(err);
     }
