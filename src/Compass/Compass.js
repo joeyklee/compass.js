@@ -23,8 +23,8 @@ class Compass {
    * @function
    */
   async init() {
-    this.attachDeviceOrientationhandler();
     await this.watchPosition();
+    this.attachDeviceOrientationhandler();
   }
 
   /**
