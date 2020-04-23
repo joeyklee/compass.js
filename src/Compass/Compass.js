@@ -64,14 +64,17 @@ class Compass {
   }
 
   watchPosition(){
-    navigator.geolocation.watchPosition(position => {
-      if (position) {
-        this.position = position;
-        console.log(this.position.coords.latitude, this.position.coords.longitude)
-      } else {
-        reject('no position found');
-      }
-    });
+    return new Promise( (resolve, reject) => {
+      navigator.geolocation.watchPosition(position => {
+        if (position) {
+          this.position = position;
+          // console.log(this.position.coords.latitude, this.position.coords.longitude)
+          resolve(position);
+        } else {
+          reject('no position found');
+        }
+      });
+    })
   }
 
 
