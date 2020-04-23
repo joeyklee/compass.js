@@ -28,6 +28,7 @@ class Compass {
 
       if (typeof DeviceOrientationEvent.requestPermission === "function") {
         const permission = await DeviceOrientationEvent.requestPermission();
+        alert(permission)
         if(permission == 'granted'){
           window.addEventListener(
             "deviceorientation",
