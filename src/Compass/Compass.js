@@ -5,7 +5,7 @@ class Compass {
    * @class
    * @param {callback} callback - a callback to be fired after .init() is called
    */
-  constructor(callback = () => {}) {
+  constructor() {
     // this.bearing = 0;
     this.heading = 0;
 
@@ -22,7 +22,7 @@ class Compass {
    * initialized the compass - returns a promise or can invoke a callback
    * @param {callback} callback - callback to be called after the .start() function is done
    */
-  init(callback){
+  init(callback = () => {}){
     if(callback){
       this.callCallback(this.start(), callback);
     }else {
@@ -46,7 +46,7 @@ class Compass {
         this.ready = true;
         return true;
       } 
-      
+
       this.permissionGranted = false;
       alert("compass permissions not granted - compass will not work");
     } catch (err) {
