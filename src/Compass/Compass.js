@@ -12,11 +12,13 @@ class Compass {
     this.deviceAngleDelta = 0;
     this.position = null;
     this.geolocationID = null;
+    this.permissionGranted = false;
 
     this.debug = false;
 
-    this.permissionTrigger = document.createElement("button");
-    this.permissionTrigger.textContent = "allow";
+    // this.permissionTrigger = document.createElement("button");
+    // this.permissionTrigger.style = "position:fixed; top:50%; left:50%; transform: translate(-50%, -50%)"
+    // this.permissionTrigger.textContent = "allow";
 
     this.ready = this.callCallback(this.init(), callback);
   }
@@ -29,19 +31,25 @@ class Compass {
     try {
       await this.watchPosition();
 
-      this.permissionTrigger.addEventListener(
-        "click",
-        this.allowOrientationPermissions()
-      );
-      document.body.appendChild(this.permissionTrigger);
+      // this.permissionTrigger.addEventListener(
+      //   "click",
+      //   this.allowOrientationPermissions()
+      // );
+      // document.body.appendChild(this.permissionTrigger);
       // await this.attachDeviceOrientationHandler();
+      if(confirm("Allow orientation for compass?") == true){
+        await this.allowOrientationPermissions();
+        this.permissionGranted = true;
+      } else {
+        this.permissionGranted = false;
+        alert('compass permissions not granted - compass will not work')
+      }
     } catch (err) {
       alert(err);
     }
   }
 
-  allowOrientationPermissions() {
-    return async (evt) => {
+  async allowOrientationPermissions() {
       if (typeof DeviceOrientationEvent.requestPermission === "function") {
         const permission = await DeviceOrientationEvent.requestPermission();
         alert(permission);
@@ -65,7 +73,6 @@ class Compass {
           alert("no device orientation support");
         }
       }
-    }
   }
 
   /**
