@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "",
-    "docs": "./node_modules/.bin/jsdoc src/Compass.js -d docs",
+    "docs": "./node_modules/.bin/jsdoc src/**/*.js -d docs",
     "examples": "live-server"
   },
   "repository": {

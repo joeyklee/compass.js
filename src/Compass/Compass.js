@@ -2,11 +2,11 @@
 
 class Compass {
   /**
-   * @name Compass
-   * @constructor
+   * @class
+   * @param {callback} callback - a callback to be fired after .init() is called
    */
   constructor(callback = () => {}) {
-    this.bearing = 0;
+    // this.bearing = 0;
     this.heading = 0;
 
     this.deviceAngleDelta = 0;
@@ -15,41 +15,39 @@ class Compass {
     this.permissionGranted = false;
 
     this.debug = false;
-
-    // this.permissionTrigger = document.createElement("button");
-    // this.permissionTrigger.style = "position:fixed; top:50%; left:50%; transform: translate(-50%, -50%)"
-    // this.permissionTrigger.textContent = "allow";
-
     this.ready = this.callCallback(this.init(), callback);
   }
 
   /**
-   * Initializes the device orientation
-   * @function
+   * Initializes the device orientation and watches the user position by default
+   * @async 
+   * @function init
+   *
    */
   async init() {
     try {
       await this.watchPosition();
 
-      // this.permissionTrigger.addEventListener(
-      //   "click",
-      //   this.allowOrientationPermissions()
-      // );
-      // document.body.appendChild(this.permissionTrigger);
-      // await this.attachDeviceOrientationHandler();
-      if(confirm("Allow orientation for compass?") == true){
+      if (confirm("Allow orientation for compass?") == true) {
         await this.allowOrientationPermissions();
         this.permissionGranted = true;
       } else {
         this.permissionGranted = false;
-        alert('compass permissions not granted - compass will not work')
+        alert("compass permissions not granted - compass will not work");
       }
     } catch (err) {
       alert(err);
     }
   }
 
+  /**
+   * Asks the user to allow permissions to get orientation
+   * @async
+   * @name allowOrientationPermissions
+   * 
+   */
   async allowOrientationPermissions() {
+    try {
       if (typeof DeviceOrientationEvent.requestPermission === "function") {
         const permission = await DeviceOrientationEvent.requestPermission();
         alert(permission);
@@ -73,14 +71,17 @@ class Compass {
           alert("no device orientation support");
         }
       }
+    } catch (err) {
+      return err;
+    }
   }
 
   /**
-   * @function
    * This is where my nose points - and seeing as my nose
    * is attached to my head, this is where my head
    * (and thus my machine) is pointing relative to North.
    * NOTE: requires that this.position is set
+   * @function getHeading
    */
   getHeading(
     origin = {
@@ -93,10 +94,12 @@ class Compass {
     return this.heading;
   }
 
+
   /**
-   * @function
    * This is the angle between the location of an object,
    * machine or destination and my heading.
+   * @param {Object} origin - {lat, lng}
+   * @param {Object} destination - {lat, lng}
    */
   getBearing(origin, destination) {
     return (
@@ -111,9 +114,11 @@ class Compass {
   }
 
   /**
-   * @function
    * get the angle between your heading and north
    * the default is true north vs. magnetic north
+   * @function
+   * @param {object} origin - {lat, lng}
+   * @param {object} north - {lat, lng}
    */
   getBearingToNorth(
     origin = {
@@ -126,9 +131,9 @@ class Compass {
   }
 
   /**
-   *
-   * @param {*} origin
-   * @param {*} destination
+   * Get the bearings towards the destination
+   * @param {object} origin - {lat, lng}
+   * @param {object} destination - {lat, lng}
    */
   getBearingToDestination(
     origin = {
@@ -164,8 +169,8 @@ class Compass {
   }
 
   /**
-   * @function
    * @async
+   * @function
    * get the position of the user
    */
   getPosition() {
@@ -181,8 +186,8 @@ class Compass {
   }
 
   /**
-   * @function
    * @async
+   * @function
    * watches the geolocation of the user
    */
   watchPosition() {
@@ -217,13 +222,18 @@ class Compass {
    * @function
    * @param {number} userLat - user latitude
    * @param {number} userLon - user longitude
-   * @param {*} desiredLat - desired latitude
-   * @param {*} desiredLon - desired longitude
+   * @param {number} desiredLat - desired latitude
+   * @param {number} desiredLon - desired longitude
    */
   calculateAngle(userLat, userLon, desiredLat, desiredLon) {
     return Math.atan2(desiredLon - userLon, desiredLat - userLat);
   }
 
+  /**
+   * Helper function that allows calling a callback from an promise function
+   * @param {promise} promise 
+   * @param {callback} callback 
+   */
   callCallback(promise, callback) {
     if (callback) {
       promise

@@ -26,119 +26,258 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>class Compass {
-  /**
-   * @name Compass
-   * @constructor
-   */
-  constructor(){
-    this.deviceAngleFromNorth = 0;
-    this.angleTowardsDesiredLocation = 0;
-    this.debug = false;
+            <pre class="prettyprint source linenums"><code>// https://aviation.stackexchange.com/questions/8000/what-are-the-differences-between-bearing-vs-course-vs-direction-vs-heading-vs-tr
 
-    this.init();
+class Compass {
+  /**
+   * @class
+   * @param {callback} callback - a callback to be fired after .init() is called
+   */
+  constructor(callback = () => {}) {
+    // this.bearing = 0;
+    this.heading = 0;
+
+    this.deviceAngleDelta = 0;
+    this.position = null;
+    this.geolocationID = null;
+    this.permissionGranted = false;
+
+    this.debug = false;
+    this.ready = this.callCallback(this.init(), callback);
   }
 
   /**
-   * Initializes the device orientation
-   * @function
+   * Initializes the device orientation and watches the user position by default
+   * @async 
+   * @function init
+   *
    */
-  init(){
-    //   check for device orientation support
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener(
-        'deviceorientation',
-        this.deviceOrientationHandler.bind(this),
-        false
-      );
-    } else {
-      alert('no device orientation support');
+  async init() {
+    try {
+      await this.watchPosition();
+
+      if (confirm("Allow orientation for compass?") == true) {
+        await this.allowOrientationPermissions();
+        this.permissionGranted = true;
+      } else {
+        this.permissionGranted = false;
+        alert("compass permissions not granted - compass will not work");
+      }
+    } catch (err) {
+      alert(err);
     }
   }
 
   /**
-   * handles changes created by the device orientation changes
+   * Asks the user to allow permissions to get orientation
+   * @async
+   * @name allowOrientationPermissions
+   * 
+   */
+  async allowOrientationPermissions() {
+    try {
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        const permission = await DeviceOrientationEvent.requestPermission();
+        alert(permission);
+        if (permission == "granted") {
+          window.addEventListener(
+            "deviceorientation",
+            this.deviceOrientationHandler.bind(this),
+            true
+          );
+        } else {
+          throw new Error("no device orientation permissions!");
+        }
+      } else {
+        if (window.DeviceOrientationEvent) {
+          window.addEventListener(
+            "deviceorientation",
+            this.deviceOrientationHandler.bind(this),
+            true
+          );
+        } else {
+          alert("no device orientation support");
+        }
+      }
+    } catch (err) {
+      return err;
+    }
+  }
+
+  /**
+   * This is where my nose points - and seeing as my nose
+   * is attached to my head, this is where my head
+   * (and thus my machine) is pointing relative to North.
+   * NOTE: requires that this.position is set
+   * @function getHeading
+   */
+  getHeading(
+    origin = {
+      lat: this.position.coords.latitude,
+      lng: this.position.coords.longitude,
+    },
+    north = { lat: 90, lng: this.position.coords.longitude }
+  ) {
+    this.heading = 360 - this.getBearingToNorth(origin, north);
+    return this.heading;
+  }
+
+
+  /**
+   * This is the angle between the location of an object,
+   * machine or destination and my heading.
+   * @param {Object} origin - {lat, lng}
+   * @param {Object} destination - {lat, lng}
+   */
+  getBearing(origin, destination) {
+    return (
+      this.calculateAngle(
+        origin.lat,
+        origin.lng,
+        destination.lat,
+        destination.lng
+      ) *
+      (180 / Math.PI)
+    );
+  }
+
+  /**
+   * get the angle between your heading and north
+   * the default is true north vs. magnetic north
+   * @function
+   * @param {object} origin - {lat, lng}
+   * @param {object} north - {lat, lng}
+   */
+  getBearingToNorth(
+    origin = {
+      lat: this.position.coords.latitude,
+      lng: this.position.coords.longitude,
+    },
+    north = { lat: 90, lng: this.position.coords.longitude }
+  ) {
+    return this.getBearingToDestination(origin, north);
+  }
+
+  /**
+   * Get the bearings towards the destination
+   * @param {object} origin - {lat, lng}
+   * @param {object} destination - {lat, lng}
+   */
+  getBearingToDestination(
+    origin = {
+      lat: this.position.coords.latitude,
+      lng: this.position.coords.longitude,
+    },
+    destination
+  ) {
+    const angleToDestination = this.getBearing(origin, destination);
+    return this.deviceAngleDelta + angleToDestination;
+  }
+
+  /**
+   * Handles changes created by the device orientation changes
+   * assumes that the phone is in a portrait mode, with the display up
+   * towards the sky as if you were holding an actual compass
    * @callback
    * @param {object} evt - the event object of the device orientation
    */
   deviceOrientationHandler(evt) {
     if (evt.webkitCompassHeading)
       //iphone
-      this.deviceAngleFromNorth = 360 - evt.webkitCompassHeading;
+      this.deviceAngleDelta = 360 - evt.webkitCompassHeading;
     else if (evt.alpha)
       //android
-      this.deviceAngleFromNorth = evt.alpha;
+      this.deviceAngleDelta = evt.alpha;
     else {
-      console.log('compass direction not found');
+      console.log("compass direction not found");
     }
 
-    this.deviceAngleFromNorth = Math.round(this.deviceAngleFromNorth);
-
-    // update the rotation
-    this.update();
+    // console.log(this.deviceAngleDelta)
+    this.deviceAngleDelta = Math.round(this.deviceAngleDelta);
   }
 
-   /**
+  /**
+   * @async
+   * @function
    * get the position of the user
    */
   getPosition() {
     return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(position => {
+      navigator.geolocation.getCurrentPosition((position) => {
         if (position) {
           resolve(position);
         } else {
-          reject('no position found');
+          reject("no position found");
         }
       });
     });
   }
 
   /**
-   * Get the desired location
+   * @async
+   * @function
+   * watches the geolocation of the user
    */
-  async getDesiredDirection() {
-    const { data, position } = await this.getWeather();
-
-    // get the best Index based on the fitness model
-    let bestIndex = 0;
-    let bestScore;
-
-    data.list.forEach((item, idx) => {
-      const tempK = item.main.feels_like;
-
-      const fitness = this.calculateFitness(tempK);
-
-      if (!bestScore) {
-        bestScore = fitness;
-      } else if (fitness &lt; bestScore) {
-        bestScore = fitness;
-        bestIndex = idx;
-      } else {
-        return;
-      }
+  watchPosition() {
+    return new Promise((resolve, reject) => {
+      this.geolocationID = navigator.geolocation.watchPosition((position) => {
+        if (position) {
+          this.position = position;
+          console.log(
+            this.position.coords.latitude,
+            this.position.coords.longitude
+          );
+          resolve(position);
+        } else {
+          reject("no position found");
+        }
+      });
     });
-
-    // calculate the angle to the most fit
-    const bestFit = data.list[bestIndex];
-    this.angleTowardsDesiredLocation = this.calculateAngle(
-      position.coords.latitude,
-      bestFit.coord.lat,
-      position.coords.longitude,
-      bestFit.coord.lon
-    ) * (180/Math.PI);
-
-    
-    // DEBUGGING DIRECTION
-    // data.list.forEach(item => {
-    //   console.log(item.name, item.main.temp);
-    // })
-    console.log(bestFit, bestIndex);
-    console.log("angle:", this.angleTowardsDesiredLocation)
-
-    this.update();
   }
 
-}</code></pre>
+  /**
+   * Stops watching the user location
+   * @function
+   *
+   */
+  stopTracking() {
+    navigator.geolocation.clearWatch(this.geolocationID);
+    console.log("stopped tracking location");
+  }
+
+  /**
+   * Calculates the angle given a latitude and longitude position
+   * @function
+   * @param {number} userLat - user latitude
+   * @param {number} userLon - user longitude
+   * @param {number} desiredLat - desired latitude
+   * @param {number} desiredLon - desired longitude
+   */
+  calculateAngle(userLat, userLon, desiredLat, desiredLon) {
+    return Math.atan2(desiredLon - userLon, desiredLat - userLat);
+  }
+
+  /**
+   * Helper function that allows calling a callback from an promise function
+   * @param {promise} promise 
+   * @param {callback} callback 
+   */
+  callCallback(promise, callback) {
+    if (callback) {
+      promise
+        .then((result) => {
+          callback(undefined, result);
+          return result;
+        })
+        .catch((error) => {
+          callback(error);
+          return error;
+        });
+    }
+    return promise;
+  }
+}
+</code></pre>
         </article>
     </section>
 
@@ -148,13 +287,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Compass.html">Compass</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Compass.html">Compass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#allowOrientationPermissions">allowOrientationPermissions</a></li><li><a href="global.html#getthepositionoftheuser">get the position of the user</a></li><li><a href="global.html#getHeading">getHeading</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#watchesthegeolocationoftheuser">watches the geolocation of the user</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Wed Apr 22 2020 22:51:51 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Apr 23 2020 15:51:44 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
