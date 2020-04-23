@@ -26,7 +26,7 @@ class Compass {
     if(callback){
       this.callCallback(this.start(), callback);
     }else {
-      this.start();
+      return this.start();
     }
   }
 
@@ -43,11 +43,12 @@ class Compass {
       if (confirm("Allow orientation for compass?") == true) {
         await this.allowOrientationPermissions();
         this.permissionGranted = true;
-      } else {
-        this.permissionGranted = false;
-        alert("compass permissions not granted - compass will not work");
-      }
-      return this;
+        this.ready = true;
+        return true;
+      } 
+      
+      this.permissionGranted = false;
+      alert("compass permissions not granted - compass will not work");
     } catch (err) {
       alert(err);
     }

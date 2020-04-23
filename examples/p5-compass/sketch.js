@@ -1,9 +1,3 @@
-// let compass = new Compass();
-// compass.watchPosition();
-
-
-
-
 let compass;
 let headingAngle;
 let angleToNorth;
@@ -17,7 +11,6 @@ function setup() {
 }
 
 function compassReady(){
-
   headingAngle = compass.getHeading();
   bearingToNorth = compass.getBearingToNorth();
 
