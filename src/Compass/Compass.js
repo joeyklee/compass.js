@@ -25,14 +25,45 @@ class Compass {
   async init() {
     await this.watchPosition();
     //   check for device orientation support
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener(
-        "deviceorientation",
-        this.deviceOrientationHandler.bind(this),
-        false
-      );
+    // if (window.DeviceOrientationEvent) {
+    //   window.addEventListener(
+    //     "deviceorientation",
+    //     this.deviceOrientationHandler.bind(this),
+    //     true
+    //   );
+    // } else {
+    //   alert("no device orientation support");
+    // }
+    await this.attachDeviceOrientationHandler();
+  }
+
+  attachDeviceOrientationHandler() {
+    // feature detect
+    if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
+      return new Promise((resolve, reject) => {
+        window.DeviceOrientationEvent.requestPermission()
+          .then((permissionState) => {
+            if (permissionState === "granted") {
+              window.addEventListener(
+                "deviceorientation",
+                this.deviceOrientationHandler.bind(this),
+                true
+              );
+            }
+          })
+          .catch(console.error);
+      });
     } else {
-      alert("no device orientation support");
+      // handle regular non iOS 13+ devices
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener(
+          "deviceorientation",
+          this.deviceOrientationHandler.bind(this),
+          true
+        );
+      } else {
+        alert("no device orientation support");
+      }
     }
   }
 
@@ -83,13 +114,13 @@ class Compass {
     },
     north = { lat: 90, lng: this.position.coords.longitude }
   ) {
-    return this.getBearingToDestination(origin, north)
+    return this.getBearingToDestination(origin, north);
   }
 
   /**
-   * 
-   * @param {*} origin 
-   * @param {*} destination 
+   *
+   * @param {*} origin
+   * @param {*} destination
    */
   getBearingToDestination(
     origin = {
@@ -185,7 +216,7 @@ class Compass {
     return Math.atan2(desiredLon - userLon, desiredLat - userLat);
   }
 
-  callCallback(promise, callback){
+  callCallback(promise, callback) {
     if (callback) {
       promise
         .then((result) => {
