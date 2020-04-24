@@ -2,12 +2,16 @@
 
 class Compass {
   /**
+   * The compass class is a utility for creating a javascript compass
+   * with no external dependencies. You can create a compass that
+   * points north from your location or points towards a specified
+   * latitude and longitude coordinate. Regardless of where you turn
+   * the compass will point towards the specified direction.
+   * 
    * @class
    */
   constructor() {
-    // this.bearing = 0;
     this.heading = 0;
-
     this.deviceAngleDelta = 0;
     this.position = null;
     this.geolocationID = null;
@@ -51,6 +55,11 @@ class Compass {
     }
   }
 
+  /**
+   * Promisifies the confirm dialog
+   * 
+   * @param {String} msg 
+   */
   confirmDialog(msg) {
     return new Promise(function (resolve, reject) {
       let confirmed = window.confirm(msg);
@@ -61,9 +70,9 @@ class Compass {
 
   /**
    * Asks the user to allow permissions to get orientation
+   * 
    * @async
    * @name allowOrientationPermissions
-   *
    */
   async allowOrientationPermissions() {
     if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
@@ -97,6 +106,7 @@ class Compass {
    * is attached to my head, this is where my head
    * (and thus my machine) is pointing relative to North.
    * NOTE: requires that this.position is set
+   * 
    * @function getHeading
    */
   getHeading(
@@ -113,6 +123,7 @@ class Compass {
   /**
    * This is the angle between the location of an object,
    * machine or destination and my heading.
+   * 
    * @param {Object} origin - {lat, lng}
    * @param {Object} destination - {lat, lng}
    */
@@ -131,6 +142,7 @@ class Compass {
   /**
    * get the angle between your heading and north
    * the default is true north vs. magnetic north
+   * 
    * @function
    * @param {object} origin - {lat, lng}
    * @param {object} north - {lat, lng}
@@ -147,6 +159,7 @@ class Compass {
 
   /**
    * Get the bearings towards the destination
+   * 
    * @param {object} origin - {lat, lng}
    * @param {object} destination - {lat, lng}
    */
@@ -165,6 +178,7 @@ class Compass {
    * Handles changes created by the device orientation changes
    * assumes that the phone is in a portrait mode, with the display up
    * towards the sky as if you were holding an actual compass
+   * 
    * @callback
    * @param {object} evt - the event object of the device orientation
    */
@@ -184,9 +198,10 @@ class Compass {
   }
 
   /**
+   * get the position of the user
+   * 
    * @async
    * @function
-   * get the position of the user
    */
   getPosition() {
     return new Promise((resolve, reject) => {
@@ -201,9 +216,10 @@ class Compass {
   }
 
   /**
+   * watches the geolocation of the user
+   * 
    * @async
    * @function
-   * watches the geolocation of the user
    */
   watchPosition() {
     return new Promise((resolve, reject) => {
@@ -224,8 +240,8 @@ class Compass {
 
   /**
    * Stops watching the user location
+   * 
    * @function
-   *
    */
   stopTracking() {
     navigator.geolocation.clearWatch(this.geolocationID);
@@ -234,6 +250,7 @@ class Compass {
 
   /**
    * Calculates the angle given a latitude and longitude position
+   * 
    * @function
    * @param {number} userLat - user latitude
    * @param {number} userLon - user longitude
@@ -246,6 +263,7 @@ class Compass {
 
   /**
    * Helper function that allows calling a callback from an promise function
+   * 
    * @param {promise} promise
    * @param {callback} callback
    */
