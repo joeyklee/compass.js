@@ -16,8 +16,9 @@ class Compass {
     this.debug = false;
 
     this.permissionsContainer = document.createElement("div");
-    this.permissionsContainer.style = `display:flex; flex-direction:column; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%;height:100%; background-color:rgba(0,0,0, 0.95); z-index:99999999999`;
+    this.permissionsContainer.style = `display:flex; flex-direction:column; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%;height:100%; background-color:rgba(255,255,255, 0.95); z-index:99999999999`;
     this.permissionsButton = document.createElement("button");
+    this.permissionsButton.style = `font-size: 2rem;`
     this.permissionsButton.textContent = "allow compass";
     this.permissionsContainer.appendChild(this.permissionsButton);
     this.permissionsButton.addEventListener(
@@ -48,11 +49,28 @@ class Compass {
   async start() {
     try {
       await this.watchPosition();
-      document.body.appendChild(this.permissionsContainer);
+      // document.body.appendChild(this.permissionsContainer);
+      
+      const confirmation = await this.confirmDialog('allow compass to access device orientation?');
+      
+      if(confirmation) {
+        this.allowOrientationPermissions().call();
+      } else {
+        alert('compass permissions were not granted');
+      }
+      
     } catch (err) {
       alert(err);
     }
   }
+
+  confirmDialog(msg) {
+    return new Promise(function (resolve, reject) {
+      let confirmed = window.confirm(msg);
+  
+      return confirmed ? resolve(true) : reject(false);
+    });
+   }
 
   /**
    * Asks the user to allow permissions to get orientation
