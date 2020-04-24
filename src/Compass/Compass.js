@@ -14,17 +14,6 @@ class Compass {
     this.permissionGranted = false;
 
     this.debug = false;
-
-    this.permissionsContainer = document.createElement("div");
-    this.permissionsContainer.style = `display:flex; flex-direction:column; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%;height:100%; background-color:rgba(255,255,255, 0.95); z-index:99999999999`;
-    this.permissionsButton = document.createElement("button");
-    this.permissionsButton.style = `font-size: 2rem;`
-    this.permissionsButton.textContent = "allow compass";
-    this.permissionsContainer.appendChild(this.permissionsButton);
-    this.permissionsButton.addEventListener(
-      "click",
-      this.allowOrientationPermissions()
-    );
   }
 
   /**
@@ -32,7 +21,6 @@ class Compass {
    * @param {callback} callback - callback to be called after the .start() function is done
    */
   init(callback = undefined) {
-
     if (callback) {
       this.callCallback(this.start(), callback);
     } else {
@@ -49,16 +37,16 @@ class Compass {
   async start() {
     try {
       await this.watchPosition();
-      // document.body.appendChild(this.permissionsContainer);
-      
-      const confirmation = await this.confirmDialog('allow compass to access device orientation?');
-      
-      if(confirmation) {
-        this.allowOrientationPermissions().call();
+
+      const confirmation = await this.confirmDialog(
+        "allow compass to access device orientation?"
+      );
+
+      if (confirmation) {
+        await this.allowOrientationPermissions();
       } else {
-        alert('compass permissions were not granted');
+        alert("compass permissions were not granted");
       }
-      
     } catch (err) {
       alert(err);
     }
@@ -67,10 +55,10 @@ class Compass {
   confirmDialog(msg) {
     return new Promise(function (resolve, reject) {
       let confirmed = window.confirm(msg);
-  
+
       return confirmed ? resolve(true) : reject(false);
     });
-   }
+  }
 
   /**
    * Asks the user to allow permissions to get orientation
@@ -78,39 +66,31 @@ class Compass {
    * @name allowOrientationPermissions
    *
    */
-  allowOrientationPermissions() {
-    return async (evt) => {
-      if (
-        typeof window.DeviceOrientationEvent.requestPermission === "function"
-      ) {
-        const permission = await window.DeviceOrientationEvent.requestPermission();
-        alert(permission);
-        if (permission == "granted") {
-          window.addEventListener(
-            "deviceorientation",
-            this.deviceOrientationHandler.bind(this),
-            true
-          );
-          this.permissionsContainer.style.display = "none";
-          return true;
-        } else {
-
-          throw new Error("no device orientation permissions!");
-        }
+  async allowOrientationPermissions() {
+    if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
+      const permission = await window.DeviceOrientationEvent.requestPermission();
+      alert(permission);
+      if (permission == "granted") {
+        window.addEventListener(
+          "deviceorientation",
+          this.deviceOrientationHandler.bind(this),
+          true
+        );
+        return true;
       } else {
-        if (window.DeviceOrientationEvent) {
-          window.addEventListener(
-            "deviceorientation",
-            this.deviceOrientationHandler.bind(this),
-            true
-          );
-          this.permissionsContainer.style.display = "none";
-        } else {
-          alert("no device orientation support");
-          this.permissionsContainer.style.display = "none";
-        }
+        throw new Error("no device orientation permissions!");
       }
-    };
+    } else {
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener(
+          "deviceorientation",
+          this.deviceOrientationHandler.bind(this),
+          true
+        );
+      } else {
+        alert("no device orientation support");
+      }
+    }
   }
 
   /**
