@@ -12,7 +12,6 @@ class Compass {
     this.position = null;
     this.geolocationID = null;
     this.permissionGranted = false;
-
     this.debug = false;
   }
 

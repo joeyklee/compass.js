@@ -31,9 +31,8 @@
 class Compass {
   /**
    * @class
-   * @param {callback} callback - a callback to be fired after .init() is called
    */
-  constructor(callback = () => {}) {
+  constructor() {
     // this.bearing = 0;
     this.heading = 0;
 
@@ -43,64 +42,82 @@ class Compass {
     this.permissionGranted = false;
 
     this.debug = false;
-    this.ready = this.callCallback(this.init(), callback);
+  }
+
+  /**
+   * initialized the compass - returns a promise or can invoke a callback
+   * @param {callback} callback - callback to be called after the .start() function is done
+   */
+  init(callback = undefined) {
+    if (callback) {
+      this.callCallback(this.start(), callback);
+    } else {
+      return this.start();
+    }
   }
 
   /**
    * Initializes the device orientation and watches the user position by default
-   * @async 
-   * @function init
+   * @async
+   * @function start
    *
    */
-  async init() {
+  async start() {
     try {
       await this.watchPosition();
 
-      if (confirm("Allow orientation for compass?") == true) {
+      const confirmation = await this.confirmDialog(
+        "allow compass to access device orientation?"
+      );
+
+      if (confirmation) {
         await this.allowOrientationPermissions();
-        this.permissionGranted = true;
       } else {
-        this.permissionGranted = false;
-        alert("compass permissions not granted - compass will not work");
+        alert("compass permissions were not granted");
       }
     } catch (err) {
       alert(err);
     }
   }
 
+  confirmDialog(msg) {
+    return new Promise(function (resolve, reject) {
+      let confirmed = window.confirm(msg);
+
+      return confirmed ? resolve(true) : reject(false);
+    });
+  }
+
   /**
    * Asks the user to allow permissions to get orientation
    * @async
    * @name allowOrientationPermissions
-   * 
+   *
    */
   async allowOrientationPermissions() {
-    try {
-      if (typeof DeviceOrientationEvent.requestPermission === "function") {
-        const permission = await DeviceOrientationEvent.requestPermission();
-        alert(permission);
-        if (permission == "granted") {
-          window.addEventListener(
-            "deviceorientation",
-            this.deviceOrientationHandler.bind(this),
-            true
-          );
-        } else {
-          throw new Error("no device orientation permissions!");
-        }
+    if (typeof window.DeviceOrientationEvent.requestPermission === "function") {
+      const permission = await window.DeviceOrientationEvent.requestPermission();
+      alert(permission);
+      if (permission == "granted") {
+        window.addEventListener(
+          "deviceorientation",
+          this.deviceOrientationHandler.bind(this),
+          true
+        );
+        return true;
       } else {
-        if (window.DeviceOrientationEvent) {
-          window.addEventListener(
-            "deviceorientation",
-            this.deviceOrientationHandler.bind(this),
-            true
-          );
-        } else {
-          alert("no device orientation support");
-        }
+        throw new Error("no device orientation permissions!");
       }
-    } catch (err) {
-      return err;
+    } else {
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener(
+          "deviceorientation",
+          this.deviceOrientationHandler.bind(this),
+          true
+        );
+      } else {
+        alert("no device orientation support");
+      }
     }
   }
 
@@ -121,7 +138,6 @@ class Compass {
     this.heading = 360 - this.getBearingToNorth(origin, north);
     return this.heading;
   }
-
 
   /**
    * This is the angle between the location of an object,
@@ -259,8 +275,8 @@ class Compass {
 
   /**
    * Helper function that allows calling a callback from an promise function
-   * @param {promise} promise 
-   * @param {callback} callback 
+   * @param {promise} promise
+   * @param {callback} callback
    */
   callCallback(promise, callback) {
     if (callback) {
@@ -287,13 +303,13 @@ class Compass {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Compass.html">Compass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#allowOrientationPermissions">allowOrientationPermissions</a></li><li><a href="global.html#getthepositionoftheuser">get the position of the user</a></li><li><a href="global.html#getHeading">getHeading</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#watchesthegeolocationoftheuser">watches the geolocation of the user</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Compass.html">Compass</a></li></ul><h3>Global</h3><ul><li><a href="global.html#allowOrientationPermissions">allowOrientationPermissions</a></li><li><a href="global.html#getthepositionoftheuser">get the position of the user</a></li><li><a href="global.html#getHeading">getHeading</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#watchesthegeolocationoftheuser">watches the geolocation of the user</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Apr 23 2020 15:51:44 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Apr 23 2020 21:04:31 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

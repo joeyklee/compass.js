@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "",
+    "test": "karma start karma.conf.js",
     "docs": "./node_modules/.bin/jsdoc src/**/*.js -d docs",
     "examples": "live-server"
   },
