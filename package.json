@@ -1,8 +1,8 @@
 {
-  "name": "compass",
-  "version": "1.0.0",
+  "name": "compass.js",
+  "version": "0.0.1",
   "description": "A minimal javascript library for accessing the compass direction of a user relative to North.",
-  "main": "Compass.js",
+  "main": "dist/Compass.js",
   "directories": {
     "test": "tests"
   },
@@ -13,15 +13,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joeyklee/compass.git"
+    "url": "git+https://github.com/joeyklee/compass.js.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/joeyklee/compass/issues"
+    "url": "https://github.com/joeyklee/compass.js/issues"
   },
-  "homepage": "https://github.com/joeyklee/compass#readme",
+  "homepage": "https://github.com/joeyklee/compass.js#readme",
   "devDependencies": {
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
