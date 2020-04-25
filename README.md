@@ -43,20 +43,33 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ## Docs
 
-See: [Docs](./docs/);
+You can read the docs to get a better understanding of the Compass `class`. 
+
+See: [Docs](./docs/)
 
 ## Examples
 
-* [p5 example](./examples/p5-compass);
-* [Vanillajs example](./examples/vanillajs-compass);
+Here's a few examples to get you started:
+
+* [p5 example](./examples/p5-compass)
+* [Vanillajs example](./examples/vanillajs-compass)
+* [Mapboxgl example](./examples/mapboxgl-example);
 
 
 ## Develop
+
+To develop the Compass you can install the development dependencies and run the tests below. 
 
 ### Setup
 
 ```sh
 $ npm install
+```
+
+### Tests
+
+```sh
+$ npm run test
 ```
 
 ### Generate Docs
@@ -71,12 +84,9 @@ $ npm run docs
 $ npm run examples
 ```
 
-### Tests
-
-```sh
-$ npm run test
-```
-
+## TODO
+* [ ] Add webpack build
+* [ ] Allow customization for device orientation access trigger
 
 ## Credits
 * Built by [Joey Lee](https://jk-lee.com)
