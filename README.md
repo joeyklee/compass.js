@@ -1,9 +1,19 @@
 # Compass.js
 A minimal javascript library for accessing the compass direction of a user relative to North.
 
+```html
+<script src="https://unpkg.com/@joeyklee/compass.js@latest/dist/Compass.js"></script>
+```
+
+
 ![compass logo](./assets/compass.png)
 
 ## Quickstart
+
+Include the reference to the script:
+```html
+<script src="https://unpkg.com/@joeyklee/compass.js@latest/dist/Compass.js"></script>
+```
 
 Using Async/Await
 ```js
