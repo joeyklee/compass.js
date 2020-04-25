@@ -49,6 +49,8 @@ See: [Docs](./docs/)
 
 ## Examples
 
+![compass.js demo on mapbox gl map](./assets/compass-demo-mapboxgl.gif)
+
 Here's a few examples to get you started:
 
 * [p5 example](./examples/p5-compass)
