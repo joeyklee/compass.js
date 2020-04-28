@@ -226,10 +226,10 @@ class Compass {
       this.geolocationID = navigator.geolocation.watchPosition((position) => {
         if (position) {
           this.position = position;
-          console.log(
-            this.position.coords.latitude,
-            this.position.coords.longitude
-          );
+          // console.log(
+          //   this.position.coords.latitude,
+          //   this.position.coords.longitude
+          // );
           resolve(position);
         } else {
           reject("no position found");
