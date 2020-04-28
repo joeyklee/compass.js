@@ -1,3 +1,5 @@
+const Compass = require("./Compass.js");
+
 const COMPASS_DEFAULTS = {
   heading: 0,
   deviceAngleDelta: 0,

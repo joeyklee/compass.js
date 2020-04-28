@@ -282,3 +282,5 @@ class Compass {
     return promise;
   }
 }
+
+module.exports = Compass;
