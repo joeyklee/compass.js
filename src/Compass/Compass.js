@@ -1,4 +1,11 @@
-// https://aviation.stackexchange.com/questions/8000/what-are-the-differences-between-bearing-vs-course-vs-direction-vs-heading-vs-tr
+const emojiCompass = require('../assets/1F9ED.svg');
+require('./Compass.scss');
+
+const DEFAULTS = {
+  emojiCompass: emojiCompass,
+}
+
+
 
 class Compass {
   /**
@@ -14,6 +21,8 @@ class Compass {
     this.heading = 0;
     this.deviceAngleDelta = 0;
     this.position = null;
+    this.emojiCompass = DEFAULTS.emojiCompass;
+
     this.geolocationID = null;
     this.permissionGranted = false;
     this.debug = false;
@@ -41,19 +50,22 @@ class Compass {
     try {
       await this.watchPosition();
 
-      const confirmation = await this.confirmDialog(
-        "allow compass to access device orientation?"
-      );
+      document.body.innerHTML += this.emojiCompass;
+      document.querySelector('#emoji__compass').addEventListener('click', async () => {
+        try{
+          await this.allowOrientationPermissions();
+        } catch(err){
+          alert(err);
+        }
+      })
 
-      if (confirmation) {
-        await this.allowOrientationPermissions();
-      } else {
-        alert("compass permissions were not granted");
-      }
+      return true;
     } catch (err) {
       alert(err);
     }
   }
+
+
 
   /**
    * Promisifies the confirm dialog

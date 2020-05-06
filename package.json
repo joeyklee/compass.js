@@ -10,6 +10,7 @@
   "scripts": {
     "test": "karma start karma.conf.js",
     "docs": "jsdoc src/**/*.js -d docs",
+    "dev": "webpack-dev-server --config webpack.config.js --open --mode development",
     "examples": "live-server",
     "publish": "npm publish --access public",
     "prebuild": "rimraf dist",
@@ -28,6 +29,8 @@
   "homepage": "https://github.com/joeyklee/compass.js#readme",
   "devDependencies": {
     "browserify": "^16.5.1",
+    "css-loader": "^3.5.3",
+    "file-loader": "^6.0.0",
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
     "jsdoc": "^3.6.4",
@@ -40,11 +43,16 @@
     "karma-requirejs": "^1.1.0",
     "karma-safari-launcher": "^1.0.0",
     "live-server": "^1.2.1",
+    "node-sass": "^4.14.1",
     "requirejs": "^2.3.6",
     "rimraf": "^3.0.2",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1",
+    "svg-inline-loader": "^0.8.2",
     "watchify": "^3.11.1",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {},
   "files": [
