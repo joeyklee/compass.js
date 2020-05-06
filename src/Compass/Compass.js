@@ -1,5 +1,3 @@
-// https://aviation.stackexchange.com/questions/8000/what-are-the-differences-between-bearing-vs-course-vs-direction-vs-heading-vs-tr
-
 class Compass {
   /**
    * The compass class is a utility for creating a javascript compass
@@ -95,6 +93,7 @@ class Compass {
           this.deviceOrientationHandler.bind(this),
           true
         );
+        return true;
       } else {
         alert("no device orientation support");
       }
