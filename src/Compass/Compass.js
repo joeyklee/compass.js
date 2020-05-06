@@ -1,11 +1,9 @@
-const emojiCompass = require('../assets/1F9ED.svg');
-require('./Compass.scss');
+const emojiCompass = require("../assets/1F9ED.svg");
+require("./Compass.scss");
 
 const DEFAULTS = {
   emojiCompass: emojiCompass,
-}
-
-
+};
 
 class Compass {
   /**
@@ -14,7 +12,7 @@ class Compass {
    * points north from your location or points towards a specified
    * latitude and longitude coordinate. Regardless of where you turn
    * the compass will point towards the specified direction.
-   * 
+   *
    * @class
    */
   constructor() {
@@ -50,26 +48,18 @@ class Compass {
     try {
       await this.watchPosition();
 
-      
-      const div = document.createElement('div');
+      // TODO - refactor this!!!
+      const div = document.createElement("div");
       div.innerHTML += this.emojiCompass;
       const c = div.querySelector("#emoji__compass");
-      c.addEventListener('click', async () => {
-          try{
-            await this.allowOrientationPermissions();
-          } catch(err){
-            alert(err);
-          }
-        })
+      c.addEventListener("click", async () => {
+        try {
+          await this.allowOrientationPermissions();
+        } catch (err) {
+          alert(err);
+        }
+      });
       document.body.appendChild(c);
-      // document.body.innerHTML += this.emojiCompass;
-      // document.querySelector('#emoji__compass').addEventListener('click', async () => {
-      //   try{
-      //     await this.allowOrientationPermissions();
-      //   } catch(err){
-      //     alert(err);
-      //   }
-      // })
 
       return true;
     } catch (err) {
@@ -77,12 +67,10 @@ class Compass {
     }
   }
 
-
-
   /**
    * Promisifies the confirm dialog
-   * 
-   * @param {String} msg 
+   *
+   * @param {String} msg
    */
   confirmDialog(msg) {
     return new Promise(function (resolve, reject) {
@@ -94,7 +82,7 @@ class Compass {
 
   /**
    * Asks the user to allow permissions to get orientation
-   * 
+   *
    * @async
    * @name allowOrientationPermissions
    */
@@ -131,7 +119,7 @@ class Compass {
    * is attached to my head, this is where my head
    * (and thus my machine) is pointing relative to North.
    * NOTE: requires that this.position is set
-   * 
+   *
    * @function getHeading
    */
   getHeading(
@@ -148,7 +136,7 @@ class Compass {
   /**
    * This is the angle between the location of an object,
    * machine or destination and my heading.
-   * 
+   *
    * @param {Object} origin - {lat, lng}
    * @param {Object} destination - {lat, lng}
    */
@@ -167,7 +155,7 @@ class Compass {
   /**
    * get the angle between your heading and north
    * the default is true north vs. magnetic north
-   * 
+   *
    * @function
    * @param {object} origin - {lat, lng}
    * @param {object} north - {lat, lng}
@@ -184,7 +172,7 @@ class Compass {
 
   /**
    * Get the bearings towards the destination
-   * 
+   *
    * @param {object} origin - {lat, lng}
    * @param {object} destination - {lat, lng}
    */
@@ -203,7 +191,7 @@ class Compass {
    * Handles changes created by the device orientation changes
    * assumes that the phone is in a portrait mode, with the display up
    * towards the sky as if you were holding an actual compass
-   * 
+   *
    * @callback
    * @param {object} evt - the event object of the device orientation
    */
@@ -224,7 +212,7 @@ class Compass {
 
   /**
    * get the position of the user
-   * 
+   *
    * @async
    * @function
    */
@@ -242,7 +230,7 @@ class Compass {
 
   /**
    * watches the geolocation of the user
-   * 
+   *
    * @async
    * @function
    */
@@ -265,7 +253,7 @@ class Compass {
 
   /**
    * Stops watching the user location
-   * 
+   *
    * @function
    */
   stopTracking() {
@@ -275,7 +263,7 @@ class Compass {
 
   /**
    * Calculates the angle given a latitude and longitude position
-   * 
+   *
    * @function
    * @param {number} userLat - user latitude
    * @param {number} userLon - user longitude
@@ -288,7 +276,7 @@ class Compass {
 
   /**
    * Helper function that allows calling a callback from an promise function
-   * 
+   *
    * @param {promise} promise
    * @param {callback} callback
    */
