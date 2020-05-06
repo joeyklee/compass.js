@@ -1,6 +1,6 @@
 {
   "name": "@joeyklee/compass.js",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "A minimal javascript library for accessing the compass direction of a user relative to North.",
   "main": "dist/compass.js",
   "directories": {
