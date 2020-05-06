@@ -50,14 +50,26 @@ class Compass {
     try {
       await this.watchPosition();
 
-      document.body.innerHTML += this.emojiCompass;
-      document.querySelector('#emoji__compass').addEventListener('click', async () => {
-        try{
-          await this.allowOrientationPermissions();
-        } catch(err){
-          alert(err);
-        }
-      })
+      
+      const div = document.createElement('div');
+      div.innerHTML += this.emojiCompass;
+      const c = div.querySelector("#emoji__compass");
+      c.addEventListener('click', async () => {
+          try{
+            await this.allowOrientationPermissions();
+          } catch(err){
+            alert(err);
+          }
+        })
+      document.body.appendChild(c);
+      // document.body.innerHTML += this.emojiCompass;
+      // document.querySelector('#emoji__compass').addEventListener('click', async () => {
+      //   try{
+      //     await this.allowOrientationPermissions();
+      //   } catch(err){
+      //     alert(err);
+      //   }
+      // })
 
       return true;
     } catch (err) {
@@ -107,6 +119,7 @@ class Compass {
           this.deviceOrientationHandler.bind(this),
           true
         );
+        return true;
       } else {
         alert("no device orientation support");
       }
