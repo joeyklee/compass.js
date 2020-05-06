@@ -34,7 +34,7 @@ describe("Compass", function () {
       expect(compass.position).toEqual(null);
       expect(compass.geolocationID).toEqual(null);
       expect(compass.permissionGranted).toEqual(false);
-      expect(compass.debug).toEqual(false);
+      expect(compass.debug).toEqual(true);
     });
   });
 

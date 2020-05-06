@@ -19,11 +19,11 @@ class Compass {
     this.heading = 0;
     this.deviceAngleDelta = 0;
     this.position = null;
-    this.emojiCompass = DEFAULTS.emojiCompass;
+    this.button = null;
+    this.debug = true;
 
     this.geolocationID = null;
     this.permissionGranted = false;
-    this.debug = false;
   }
 
   /**
@@ -48,18 +48,16 @@ class Compass {
     try {
       await this.watchPosition();
 
-      // TODO - refactor this!!!
-      const div = document.createElement("div");
-      div.innerHTML += this.emojiCompass;
-      const c = div.querySelector("#emoji__compass");
-      c.addEventListener("click", async () => {
-        try {
-          await this.allowOrientationPermissions();
-        } catch (err) {
-          alert(err);
-        }
-      });
-      document.body.appendChild(c);
+      if (this.debug === true) {
+        this.createButton();
+        this.button.addEventListener(
+          "click",
+          this.triggerDeviceOrientationPermissions()
+        );
+        document.body.appendChild(this.button);
+      }
+      // NOTE: if debug is false, the expectation is that you handle the
+      // the device orientation handling permissions on your own.
 
       return true;
     } catch (err) {
@@ -68,16 +66,33 @@ class Compass {
   }
 
   /**
-   * Promisifies the confirm dialog
+   * creates a button to trigger the device orientation permissions
    *
-   * @param {String} msg
+   * function
+   * @name createButton
    */
-  confirmDialog(msg) {
-    return new Promise(function (resolve, reject) {
-      let confirmed = window.confirm(msg);
+  createButton() {
+    const div = document.createElement("div");
+    div.innerHTML += emojiCompass;
+    this.button = div.querySelector("#emoji__compass");
+  }
 
-      return confirmed ? resolve(true) : reject(false);
-    });
+  /**
+   * triggers the device orientation permissions
+   * @function
+   * @name triggerDeviceOrientationPermissions
+   */
+  triggerDeviceOrientationPermissions() {
+    return async (evt) => {
+      try {
+        await this.allowOrientationPermissions();
+        if (this.debug === true) {
+          this.button.style.display = "none";
+        }
+      } catch (err) {
+        alert(err);
+      }
+    };
   }
 
   /**
@@ -91,6 +106,7 @@ class Compass {
       const permission = await window.DeviceOrientationEvent.requestPermission();
       alert(permission);
       if (permission == "granted") {
+        this.permissionGranted = true;
         window.addEventListener(
           "deviceorientation",
           this.deviceOrientationHandler.bind(this),
@@ -102,6 +118,8 @@ class Compass {
       }
     } else {
       if (window.DeviceOrientationEvent) {
+        this.permissionGranted = true;
+        alert("device orientation permission granted");
         window.addEventListener(
           "deviceorientation",
           this.deviceOrientationHandler.bind(this),
